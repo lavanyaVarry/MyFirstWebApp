@@ -19,5 +19,35 @@
   </dependencies>
   <build>
     <finalName>MyFirstWebapp</finalName>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.7.7.201606060606</version>
+          <configuration>
+              <!-- Sets the path to the file which contains the execution data. -->
+              <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+              <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+          </configuration>
+          <executions>
+              <execution>
+                <id>jacoco-initialize</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>jacoco-site</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+				  </executions>
+				
+			  </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>
