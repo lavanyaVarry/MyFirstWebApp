@@ -1,17 +1,24 @@
-pipeline {
-    agent any
-    def mvnHome
-    stages{
+node{
         stage('SCM-Checkout'){
-            steps{
-                git credentialsId: 'f33fe5fc-cd70-4969-a995-5a6d0ada26d5',  url: 'https://github.com/lavanyaVarry/MyFirstWebApp.git'
+        git credentialsId: 'git-credentials', url: 'https://github.com/lavanyaVarry/MyFirstWebApp.git'        
+        }
+        stage('build'){
+            def mvn_home = tool name: 'M3', type: 'maven'
+            sh "'${mvn_home}/bin/mvn' clean package"
+        }
+        stage('build-docker-image'){
+            sh "docker build -t sailavanya/mydockerhub:webappFrmJenkins ."
+        }
+        stage('push-docker-image'){
+          withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'pwd', usernameVariable: 'username')]) {
+                sh "docker login -u '${username}' -p '${pwd}'"
+                sh "docker push sailavanya/mydockerhub:webappFrmJenkins"
             }
         }
-        stage ('Build'){
-            steps{
-                mvnHome = tool 'M3'
-                sh "'${mvnHome}/bin/mvn' clean package"
+        stage('deploy'){
+            def dockerrun = 'docker run -p 8080:8080 -d --name MyFirstWebapp sailavanya/mydockerhub:webappFrmJenkins'
+            sshagent(['webappserver']) {
+                    sh "ssh -o StrictHostKeyChecking=no webserver@23.99.191.12 ${dockerrun}"
             }
         }
-    }
 }
