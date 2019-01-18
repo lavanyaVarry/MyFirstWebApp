@@ -1,5 +1,9 @@
 pipeline { 
     agent any 
+    environment {
+        mvn_home = tool name: 'M3', type: 'maven'
+        dockerrun = 'docker run -p 8080:8080 -d --name WebappContainer1 sailavanya/mydockerhub:webappFrmJenkins'
+    }
     stages {
         stage('SCM-Checkout') { 
             steps { 
@@ -7,7 +11,6 @@ pipeline {
             }
         }
         stage('Build'){
-            def mvn_home = tool name: 'M3', type: 'maven'
             steps {
                 sh "'${mvn_home}/bin/mvn' clean package"
             }
@@ -27,7 +30,6 @@ pipeline {
         }
         stage('Deploy-To-Remote-Server'){
             steps{
-                def dockerrun = 'docker run -p 8080:8080 -d --name WebappContainer1 sailavanya/mydockerhub:webappFrmJenkins'
                 sshagent(['webappserver']) {
                     sh "ssh -o StrictHostKeyChecking=no webserver@webappserver.centralus.cloudapp.azure.com ${dockerrun}"
                 }
