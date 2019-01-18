@@ -27,9 +27,9 @@ pipeline {
         }
         stage('Deploy-To-Remote-Server'){
             steps{
-                def dockerrun = 'docker run -p 8080:8080 -d --name MyFirstWebapp sailavanya/mydockerhub:webappFrmJenkins'
+                def dockerrun = 'docker run -p 8080:8080 -d --name WebappContainer1 sailavanya/mydockerhub:webappFrmJenkins'
                 sshagent(['webappserver']) {
-                    sh "ssh -o StrictHostKeyChecking=no webserver@23.99.191.12 ${dockerrun}"
+                    sh "ssh -o StrictHostKeyChecking=no webserver@webappserver.centralus.cloudapp.azure.com ${dockerrun}"
                 }
             }
         }
